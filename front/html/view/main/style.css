@@ -1,0 +1,104 @@
+  /* 태그는 이름 적어서 쓰면 바로 적용됨
+        .은 class의 이름을 지정 
+        #은 id의 이름을 지정*/
+        body {
+            margin: 0;
+        }
+
+        a {
+            /* TEXT의 기본 꾸밈 제거 */
+            text-decoration: nones;
+            color: black;
+        }
+
+        #container{
+            margin : 0 auto;
+            min-width: 460px;
+            max-width: 768px;
+        }
+
+        #logo-container{
+            padding-top: 60px;
+            padding-bottom: 20px;
+
+        }
+        #logo {
+            /* 가로 가운데 정렬 */
+            margin: 0 auto;
+           
+
+            display: block;
+            width: 240px;
+            height: 44px;
+            /*배경 이미지*/
+            background: url(https://static.nid.naver.com/images/ui/join/m_naver_logo_20191126.png);
+            /*빈 공간에 배경 이미지를 반복해서 보여줄건지*/
+            background-repeat: no-repeat;
+            background-size: 240px auto;
+            font-size: 0;
+
+        }
+
+        .inline{
+            display: inline;
+        }
+
+        .flex{
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .flex-1{
+            flex: auto;
+        }
+
+        .content{
+            width: 460px;
+            margin: 0 auto;
+        }
+
+        .input-style {
+            width: 430px;
+            height: 29px;
+            padding-left: 14px;
+            padding-right: 14px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border: 1px solid #dadada;
+        }
+
+        .input-middle-style{
+            width: 119px;
+            display: block;
+            padding-left: 14px;
+            padding-right: 14px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border: 1px solid #dadada;
+        }
+
+        .input-label {
+            
+            
+            margin-top: 19px;
+            margin-bottom: 8px;
+            /* 글자의 크기 */
+            font-size: 14px;
+            /* 글자의 굵기 */
+            font-weight: 700;
+        }
+
+        .join-button{
+            width: 100%;
+            margin-top: 30px;
+            padding-top: 15px;
+            padding-bottom: 15px;
+
+            font-size: 18px;
+            font-weight: 700;
+            
+            color: #ffffff;
+            border: none;
+            background-color: #03c75e;
+        }

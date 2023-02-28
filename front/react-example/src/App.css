@@ -1,0 +1,13 @@
+body {
+    margin: 0;
+}
+
+a {
+    /* TEXT의 기본 꾸밈 제거 */
+    text-decoration: nones;
+    color: black;
+}
+
+select option{
+    width :100%;
+}

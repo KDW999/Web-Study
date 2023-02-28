@@ -1,0 +1,114 @@
+.kakao-container{
+    width: 100vw;
+    height: 100vh;
+
+    display : flex; /* 정렬 시 사용*/
+    justify-content: center; /* 가로 중앙 정렬*/
+    align-items: center; /* 세로 중앙 정렬*/
+}
+
+.kakao-login-form{
+    width: 580px;
+}
+
+.kakao-logo{
+    /* text-align 자식들이 모두 정렬
+       margin 0 auto 본인 기준으로 정렬
+       justify-content 자기 자식 정렬
+       길이가 지정 안되있으면 display가 안먹을 수도 있다.*/
+    display: flex;
+    justify-content: center;
+}
+
+.kakao-logo-img{
+    width: 88px;
+    height: 27px;
+    background-image: url(https://accounts.kakaocdn.net/images/pc/logo_kakao.png);
+    background-size: 100px 80px;
+}
+
+.kakao-login {
+    width : 441px;
+    height: 100%;
+
+    border : 1px solid rgba(0, 0, 0, .12);
+
+    margin-top: 40px;
+    margin-bottom: 42px;
+
+    padding : 55px 69px 50px;
+}
+
+.kakao-input-box{
+    margin-top: 4px;
+    margin-bottom: 4px;
+
+    border-bottom: 3px;
+    border-style: solid; 
+    border-color: #cccccc;
+    border-width: 0 0 2px;
+}
+
+.kakao-input{
+    width: 100%;
+    height: 45px;
+
+    border: 0;
+
+    font-size : 18px;
+    line-height: 25px;
+    outline: 0 none;
+}
+
+.kakao-checkbox-box{
+    margin-top: 25px;
+    font-size: 14px;
+    color : rgba(0, 0, 0, .7);
+}
+
+.kakao-checkbox{
+    margin-right: 8px;
+}
+
+.button-layout{
+    padding-top: 40px;
+}
+
+.kakao-login-button{
+    width: 100%;
+    height: 50px;
+
+    border: 0;
+    border-radius: 5px;
+    background-color: #f2e500;
+
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.kakao-divider{
+    height: 1px;
+    margin-top: 23px; 
+    margin-bottom: 15px;
+
+    background-color: rgba(0, 0, 0, .06);
+}
+
+.kakao-qr-button{
+    width: 100%;
+    height: 50px;
+
+    border: 0;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.kakao-link-layout{
+    margin-top : 26px;
+
+    display: flex;
+    justify-content: space-between; /* 자식들이 공간을 두고 양 옆으로 배치*/
+}

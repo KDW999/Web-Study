@@ -20,31 +20,44 @@ public class MainService {
         return result;
     }
 
-    public String getVariable(String data){
-        return "You input data is '" + data + "'";
+    public ResponseDto<String> getVariable(String data){
+        String string = "You input data is '" + data + "'";
+        ResponseDto<String> result = ResponseDto.setSuccess("Success", string);
+        return result;
     }
 
-    public String postMain(){
-        return "Post main Response!";
+    public ResponseDto<String> postMain(){
+        ResponseDto<String> result = ResponseDto.setSuccess("Success", "Post");
+        return result;
     }
 
-    public String postRequestBody(String data){
-        return "Post body data is "+ data + "'";
+    public ResponseDto<String> postRequestBody(String data){
+        String string = "Post body data is "+ data + "'";
+        ResponseDto<String> result = ResponseDto.setSuccess("Success", string);
+        return result;
     }
 
-    public String patchMain(){
-        return "Patch Method는 수정 작업을 지정한 메서드입니다. 클라이언트로 부터 데이터를 받을 땐 request body로 받습니다.";
+    public ResponseDto<String> patchMain(){
+        String string = "Patch 메서드는 수정 작업을 지정한 메서드입니다. 클라이언트로부터 데이터를 받을 떈 request vodt로 받습니다.";
+        ResponseDto<String> result = ResponseDto.setSuccess("Success", string);
+        return result;
     }
 
-    public String deleteMain(){
-        return "Delete Method는 삭제 작업을 지정한 메서드입니다. 클라이언트로 부터 데이터를 받을 땐 path variable로 받습니다.";
+    public ResponseDto<String> deleteMain(){
+        String string = "Delete 메서드는 삭제 작업을 지정한 메서드입니다. 클라이언트로부터 데이터를 받을 땐 path variable로 받습니다.";
+        ResponseDto<String> result = ResponseDto.setSuccess("Success", string);
+        return result;
     }
 
-    public String postTest(PostTestRequestDto dto){
-        return dto.toString();
+    public ResponseDto<String> postTest(PostTestRequestDto dto){
+        String string = dto.toString();
+        ResponseDto<String> result = ResponseDto.setSuccess("Success", string);
+        return result;
     }
 
-    public GetTestResponseDto getTest(){
-        return new GetTestResponseDto(10, "Comment");
+    public ResponseDto<GetTestResponseDto> getTest(){
+        GetTestResponseDto data = new GetTestResponseDto(10, "Comment");
+        ResponseDto<GetTestResponseDto> result = ResponseDto.setSuccess("Success", data);
+        return result;
     }
 }

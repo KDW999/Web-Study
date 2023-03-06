@@ -1,6 +1,12 @@
 package com.koreait.board.dto.response.humanResource;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 
 public class PostHumanResourceResponseDto {
     private int employeeNumber; //? 사번

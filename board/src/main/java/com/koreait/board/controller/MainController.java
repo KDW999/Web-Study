@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.koreait.board.dto.GetTestResponseDto;
 import com.koreait.board.dto.PostTestRequestDto;
-import com.koreait.board.dto.ResponseDto;
+import com.koreait.board.dto.response.ResponseDto;
 import com.koreait.board.service.MainService;
 
 //? 해당 클래스 REST API로 사용되는 Controller로 지정할 수 있음

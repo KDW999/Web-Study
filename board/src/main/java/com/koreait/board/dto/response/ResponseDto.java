@@ -1,4 +1,4 @@
-package com.koreait.board.dto;
+package com.koreait.board.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

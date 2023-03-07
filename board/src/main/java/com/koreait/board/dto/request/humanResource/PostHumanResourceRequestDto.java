@@ -50,13 +50,10 @@ public class PostHumanResourceRequestDto {
 
     private String resignationDate; //? 퇴사일
 
-    @NotBlank
-    @Length(min=0, max=5)
     private String department; //? 부서 코드
 
-    @Min(400)
+    @Min(0)
     private int annualIncome; //? 연봉
 
-    @NotBlank
     private String note; //? 비고
 }

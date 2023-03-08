@@ -1,26 +1,41 @@
 package com.koreait.board.controller;
 
 import javax.validation.Valid;
-
+import java.util.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.koreait.board.common.constant.ApiMappingPattern;
+import com.koreait.board.dto.request.department.GetAllDepartmentListResponseDto;
 import com.koreait.board.dto.request.department.PostDepartmentRequestDto;
 import com.koreait.board.dto.response.ResponseDto;
 import com.koreait.board.dto.response.department.PostDepartmentResponseDto;
+import com.koreait.board.service.DepartmentService;
 
 @RestController
-@RequestMapping(ApiMappingPattern.DEPARTMENT)
+@RequestMapping(ApiMappingPattern.DEPARTMENT) // 연결 URL
 public class DepartmentController {
     
-    private static final String POST_DEPARTMENT = "/";
+    @Autowired DepartmentService departmentService; // 인스턴스 생성 작업을 스프링에게 맡김
+     private static final String POST_DEPARTMENT = "/";
+     private static final String GET_ALL_DEPARTMENT_LIST = "/all";
     
     @PostMapping(POST_DEPARTMENT)
+    //? POST http://localhost:4040/apis/department/
     public ResponseDto<PostDepartmentResponseDto> postDepartment(@Valid @RequestBody PostDepartmentRequestDto reqeustBody){
+        ResponseDto<PostDepartmentResponseDto> response = departmentService.postDepartment(reqeustBody);
+        return response;
+        // postman에서 값 볼려면 postDepartmentRequestDto에 있는 값들을 postman body-raw-json에 적어줘야함
+    }
 
-        return null;
+    @GetMapping(GET_ALL_DEPARTMENT_LIST)
+    //GET http://localhost:4040/apis/department/all
+    public ResponseDto<List<GetAllDepartmentListResponseDto>> getAllDepartmentList(){
+        ResponseDto<List<GetAllDepartmentListResponseDto>> response = departmentService.getAllDepartmentList();
+        return response;
     }
 }

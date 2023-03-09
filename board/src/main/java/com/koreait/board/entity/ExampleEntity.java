@@ -19,10 +19,10 @@ import lombok.NoArgsConstructor;
 //? Builder 패턴 : 생성자로 특정한 필드를 지정해서 지정된 필드들만 초기화 하는 것이 아닌 생성하는 순간에 초기화할 필드를 지정해서
 //?                인스턴스를 생성해주는 패턴
 //? 사용방법 : 클래스명.builder().필드명(초기화할 데이터)[...].build();
-@Data
+@Data //^ getter, setter, toString()
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor //^ 빈 생성자
+@AllArgsConstructor //^ 완성형 생성자
 @Entity(name = "Example")
 @Table(name = "Example")
 public class ExampleEntity {

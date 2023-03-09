@@ -27,7 +27,7 @@ CREATE TABLE Department(
     tel_Number VARCHAR(15) NOT NULL COMMENT '부서 전화번호',
     
     CONSTRAINT department_fk_chief FOREIGN KEY (chief) REFERENCES Employee (employee_number)
-    
+    -- 참조키가 chief가 아닌 거 같은데;; departmentCode인가?
 );
 
 DROP TABLE Department;

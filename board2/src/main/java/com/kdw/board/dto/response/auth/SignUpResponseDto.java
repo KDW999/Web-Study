@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// 회원가입
+// 유저에 대한 정보 입력
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

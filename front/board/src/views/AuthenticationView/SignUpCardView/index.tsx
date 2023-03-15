@@ -157,8 +157,8 @@ export default function SignUpCardView({ setLoginView }: Props) {
     alert('회원가입 완료');
 
     const data = {
-      email, password, passwordCheck, nickname, address, addressDetail, telNumber
-    } 
+      email, password, nickname, address, addressDetail, telNumber
+    } // passwordCheck,
 
     console.log(data);
   }

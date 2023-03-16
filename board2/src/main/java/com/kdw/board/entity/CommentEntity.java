@@ -23,6 +23,6 @@ public class CommentEntity {
     private int boardNumber;
     private String writeDatetime;
     private String commentContent;
-    private String writerProfileUrl;
+    private String writeProfileUrl;
     private String writerNickname;
 }

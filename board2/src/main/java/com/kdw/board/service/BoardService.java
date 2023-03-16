@@ -1,15 +1,28 @@
 package com.kdw.board.service;
 
+import java.util.List;
+
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kdw.board.common.constant.ResponseMessage;
+import com.kdw.board.dto.request.board.PatchBoardDto;
 import com.kdw.board.dto.request.board.PostboardDto;
 import com.kdw.board.dto.response.ResponseDto;
+import com.kdw.board.dto.response.board.DeleteBoardResponseDto;
+import com.kdw.board.dto.response.board.GetBoardResponseDto;
+import com.kdw.board.dto.response.board.GetListResponseDto;
+import com.kdw.board.dto.response.board.GetMyListResponseDto;
+import com.kdw.board.dto.response.board.PatchBoardResponseDto;
 import com.kdw.board.dto.response.board.PostBoardResponseDto;
 import com.kdw.board.entity.BoardEntity;
+import com.kdw.board.entity.CommentEntity;
+import com.kdw.board.entity.LikyEntity;
 import com.kdw.board.entity.UserEntity;
 import com.kdw.board.repository.BoardRepository;
+import com.kdw.board.repository.CommentRepository;
+import com.kdw.board.repository.LikyRepository;
 import com.kdw.board.repository.UserRepository;
 
 @Service
@@ -17,7 +30,10 @@ public class BoardService {
     
     @Autowired private BoardRepository boardRepository;
     @Autowired private UserRepository userRepository;
+    @Autowired private LikyRepository likyRepository;
+    @Autowired private CommentRepository commentRepository;
 
+    // 글 생성
     public ResponseDto<PostBoardResponseDto> postBoard(String email, PostboardDto dto){
        
         PostBoardResponseDto data = null;
@@ -37,6 +53,122 @@ public class BoardService {
             return ResponseDto.setFailed(ResponseMessage.DATABASE_ERROR);
         }
         return ResponseDto.setSuccess(ResponseMessage.SUCCESS, data);
-
     }
+
+    // 글 조회
+    public ResponseDto<GetBoardResponseDto> getBoard(int boardNumber){
+        
+        GetBoardResponseDto data = null;
+
+        try {
+
+            BoardEntity boardEntity = boardRepository.findByBoardNumber(boardNumber);
+            if(boardEntity == null) return ResponseDto.setFailed(ResponseMessage.NOT_EXIST_BOARD);
+
+            List<LikyEntity> likyList = likyRepository.findByBoardNumber(boardNumber);
+            List<CommentEntity> commentList = commentRepository.findByBoardNumberOrderByWriteDatetimeDesc(boardNumber);
+
+            data = new GetBoardResponseDto(boardEntity, likyList, commentList);
+            
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.setFailed(ResponseMessage.DATABASE_ERROR);
+        }
+
+        return ResponseDto.setSuccess(ResponseMessage.SUCCESS, data);
+    }
+
+    // 글 목록 
+    public ResponseDto<List<GetListResponseDto>> getList(){
+
+        List<GetListResponseDto> data = null;
+
+        try {
+            
+            List<BoardEntity> boardEntityList = boardRepository.findByOrderByBoardWriteDatetimeDesc();
+            data = GetListResponseDto.copyList(boardEntityList);
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.setFailed(ResponseMessage.DATABASE_ERROR);
+        }
+        
+        return ResponseDto.setSuccess(ResponseMessage.SUCCESS, data);
+    }
+
+    // 내 글 목록
+    public ResponseDto<List<GetMyListResponseDto>> getMyList(String email){
+
+        List<GetMyListResponseDto> data = null;
+
+        try {
+            
+            List<BoardEntity> boardList = boardRepository.findByWriterEmailOrderByBoardWriteDatetimeDesc(email);
+            data = GetMyListResponseDto.copyList(boardList);
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.setFailed(ResponseMessage.DATABASE_ERROR);
+        }
+
+        return ResponseDto.setSuccess(ResponseMessage.SUCCESS, data);
+    }
+
+
+    // 글 수정
+    public ResponseDto<PatchBoardResponseDto> patchBoard(String email, PatchBoardDto dto){
+
+        PatchBoardResponseDto data = null;
+
+        int boardNumber = dto.getBoardNumber();
+
+        try {
+
+            BoardEntity boardEntity = boardRepository.findByBoardNumber(boardNumber);
+            if(boardEntity == null) return ResponseDto.setFailed(ResponseMessage.NOT_EXIST_BOARD);
+
+            boolean isEqualWriter = email.equals(boardEntity.getWriterEmail());
+            if(!isEqualWriter) return ResponseDto.setFailed(ResponseMessage.NOT_PERMISSION);
+
+            boardEntity.patch(dto);
+            boardRepository.save(boardEntity);
+
+            List<LikyEntity> likyList = likyRepository.findByBoardNumber(boardNumber);
+            List<CommentEntity> commentList = commentRepository.findByBoardNumberOrderByWriteDatetimeDesc(boardNumber);
+
+            data = new PatchBoardResponseDto(boardEntity, likyList, commentList);
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.setFailed(ResponseMessage.DATABASE_ERROR);
+        }
+
+        return ResponseDto.setSuccess(ResponseMessage.SUCCESS, data);
+    }
+
+    // 글 삭제
+    public ResponseDto<DeleteBoardResponseDto> deleteBoard(String email, int boardNumber){
+
+        DeleteBoardResponseDto data = null;
+
+        try {
+            
+            BoardEntity boardEntity = boardRepository.findByBoardNumber(boardNumber);
+            if(boardEntity == null) return ResponseDto.setFailed(ResponseMessage.NOT_EXIST_BOARD);
+
+            boolean isEqualWriter = email.equals(boardEntity.getWriterEmail());
+            if(!isEqualWriter) return ResponseDto.setFailed(ResponseMessage.NOT_PERMISSION);
+
+            boardRepository.delete(boardEntity);
+            data = new DeleteBoardResponseDto(true);
+
+         } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.setFailed(ResponseMessage.DATABASE_ERROR);
+        }
+
+        return ResponseDto.setSuccess(ResponseMessage.SUCCESS, data);
+    }
+
+
 }

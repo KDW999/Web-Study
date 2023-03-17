@@ -59,4 +59,20 @@ public class BoardEntity {
         this.boardContent = dto.getBoardContent();
         this.boardImgUrl = dto.getBoardImgUrl();
     }
+
+    public void increaseViewCount(){
+        this.viewCount++;
+    }
+
+    public void increaseLikeCount(){
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount(){
+        this.likeCount--;
+    }
+
+    public void increaseCommentCount(){
+        this.commentCount++;
+    }
 }

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kdw.board.common.constant.ApiPattern;
 import com.kdw.board.service.AuthService;
+
+import io.swagger.annotations.Api;
+
 import com.kdw.board.dto.request.auth.SignInDto;
 import com.kdw.board.dto.request.auth.SignUpDto;
 import com.kdw.board.dto.response.ResponseDto;
@@ -19,6 +22,7 @@ import com.kdw.board.dto.response.auth.SignUpResponseDto;
 
 @RestController
 @RequestMapping(ApiPattern.AUTH)
+@Api(description = "인증 모듈")
 public class AuthController {
     
     @Autowired private AuthService authService;

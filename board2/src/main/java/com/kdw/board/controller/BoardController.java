@@ -26,6 +26,8 @@ import com.kdw.board.dto.response.board.GetBoardResponseDto;
 import com.kdw.board.dto.response.board.GetListResponseDto;
 import com.kdw.board.dto.response.board.GetMyListResponseDto;
 import com.kdw.board.dto.response.board.GetSearchListResponseDto;
+import com.kdw.board.dto.response.board.GetTop15RelatedSearchWordResponseDto;
+import com.kdw.board.dto.response.board.GetTop15SearchWordResponseDto;
 import com.kdw.board.dto.response.board.LikeResponseDto;
 import com.kdw.board.dto.response.board.PatchBoardResponseDto;
 import com.kdw.board.dto.response.board.PostBoardResponseDto;
@@ -46,8 +48,11 @@ public class BoardController {
     private final String GET_SEARCH_LIST = "/search-list/{searchWord}";
     private final String GET_SEARCH_LIST_PREVIOUS = "/search-list/{searchWord}/{previousSearchWord}";
     private final String GET_BOARD = "/{boardNumber}";
+    private final String GET_TOP15_SEARCH_WORD = "/top15-search-word";
+    private final String GET_TOP15_RELATED_SEARCH_WORD = "/top15-realted-search-word/{searchWord}";
     private final String PATCH_BOARD = "";
     private final String DELETE_BOARD = "/{boardNumber}";
+    
 
     // 게시글 생성
     @PostMapping(POST_BOARD)
@@ -91,6 +96,7 @@ public class BoardController {
          ResponseDto<List<GetMyListResponseDto>> response = boardService.getMyList(email);
          return response;
     }
+    
     @GetMapping(value = {GET_SEARCH_LIST_PREVIOUS, GET_SEARCH_LIST})
     public ResponseDto<List<GetSearchListResponseDto>> getSearchList(
         @PathVariable(name = "searchWord", required = false) String searchWord
@@ -99,6 +105,21 @@ public class BoardController {
         ResponseDto<List<GetSearchListResponseDto>> response = boardService.getSearchList(searchWord, previousSearchWord);
         return response;
     }
+    
+    // 상위 15개
+    @GetMapping(GET_TOP15_SEARCH_WORD)
+    public ResponseDto<GetTop15SearchWordResponseDto> getTop15SearchWord(){
+        ResponseDto<GetTop15SearchWordResponseDto> response = boardService.getTop15SearchWord();
+        return response;
+    }
+
+    // 연관 검색어
+    @GetMapping(GET_TOP15_RELATED_SEARCH_WORD)
+    public ResponseDto<GetTop15RelatedSearchWordResponseDto> getTop15RelatedSearchWord(@PathVariable("searchWord") String searchWord){
+        ResponseDto<GetTop15RelatedSearchWordResponseDto> response = boardService.getTop15RelatedSearchWord(searchWord);
+        return response;
+    }
+
     // 게시글 수정
     @PatchMapping(PATCH_BOARD)
     public ResponseDto<PatchBoardResponseDto> patchBoard(@AuthenticationPrincipal String email,

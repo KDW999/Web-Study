@@ -13,6 +13,7 @@ import com.kdw.board.common.constant.ApiPattern;
 import com.kdw.board.service.AuthService;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 import com.kdw.board.dto.request.auth.SignInDto;
 import com.kdw.board.dto.request.auth.SignUpDto;
@@ -30,6 +31,7 @@ public class AuthController {
     private final String SIGN_UP = "/sign-up";
     private final String SIGN_IN = "/sign-in";
 
+    @ApiOperation(value = "회원가입", notes = "이메일, 비밀번호, 닉네임, 전화번호, 주소를 입력하여 회원을 등록하고 성공 시에는 회원가입 성공 여부에 true가 반환")
     @PostMapping(SIGN_UP) // auth와 관련된 건 웬만하면 다 POST, CRUD의 C, 데이터 숨겨줘야함
     public ResponseDto<SignUpResponseDto> signUp(@Valid @RequestBody SignUpDto requestBody) {
         ResponseDto<SignUpResponseDto> response = authService.signUp(requestBody);

@@ -23,15 +23,15 @@ public class MainService {
     // }
 
     //? 시간을 지정해서 특정 시간마다 데이터 실행
-    @Scheduled(cron = "34 * * * * ?")
-    public void scheduleCronJob(){
-        // System.out.println("Cron Job으로 시간 지정 작업 : " + System.currentTimeMillis() / 1000);
-        try {
-          crawlling();   
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-    }
+    // @Scheduled(cron = "34 * * * * ?")
+    // public void scheduleCronJob(){
+    //     // System.out.println("Cron Job으로 시간 지정 작업 : " + System.currentTimeMillis() / 1000);
+    //     try {
+    //       crawlling();   
+    //     } catch (Exception exception) {
+    //         exception.printStackTrace();
+    //     }
+    // }
 
     //? 자바로 크롤링
     public void crawlling() throws Exception {

@@ -15,6 +15,11 @@ import com.kdw.board.dto.response.ResponseDto;
 import com.kdw.board.dto.response.user.PatchProfileResponseDto;
 import com.kdw.board.service.UserService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+
+@Api(description = "유저 모듈")
 @RestController
 @RequestMapping(ApiPattern.USER)
 public class UserController {
@@ -23,8 +28,13 @@ public class UserController {
 
     private final String PATCH_PROFILE = "/profile";
 
+    @ApiOperation(value = "유저 프로필 URL 수정", notes= "Request Header Authorization에 Bearer JWT를 포함하고 Request Body에 profile을 포함하여 요청을 하면, 성공 시 유저 정보를 반환, 실패 시 실패 메세지를 반환")
     @PatchMapping(PATCH_PROFILE)
-    public ResponseDto<PatchProfileResponseDto> patchProfile(@AuthenticationPrincipal String email, 
+    public ResponseDto<PatchProfileResponseDto> patchProfile(
+    
+    @ApiParam(hidden = true)
+    @AuthenticationPrincipal String email,
+     
     @Valid @RequestBody PatchProfileDto requestBody){
 
         ResponseDto<PatchProfileResponseDto> response = userService.patchProfile(email, requestBody);

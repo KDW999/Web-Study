@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 // 회원가입
 // 유저에 대한 정보 입력
-@ApiModel(value = "회원가입 결과")
+@ApiModel(value = "회원가입 Response Body -")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

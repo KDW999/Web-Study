@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kdw.board.common.constant.ApiPattern;
-import com.kdw.board.service.AuthService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +19,7 @@ import com.kdw.board.dto.request.auth.SignUpDto;
 import com.kdw.board.dto.response.ResponseDto;
 import com.kdw.board.dto.response.auth.SignInResponseDto;
 import com.kdw.board.dto.response.auth.SignUpResponseDto;
+import com.kdw.board.service.AuthService;
 
 @RestController
 @RequestMapping(ApiPattern.AUTH)

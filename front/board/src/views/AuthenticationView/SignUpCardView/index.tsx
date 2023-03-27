@@ -8,6 +8,11 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Visibility from '@mui/icons-material/Visibility';
 import { useSignUpStore } from 'src/stores'; // export는 중괄호 써서 가져와라
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import axios from 'axios';
+import { SignUpDto } from 'src/apis/request/auth';
+import  ResponseDto from 'src/apis/response';
+import { SignUpresponseDto } from 'src/apis/response/auth';
+import { SIGN_UP_URL } from 'src/constants/api';
 
 function FirstPage() {
 
@@ -154,13 +159,31 @@ export default function SignUpCardView({ setLoginView }: Props) {
       return;
     }
 
-    alert('회원가입 완료');
+    const data : SignUpDto = { email, password, nickname, address : `${address} ${addressDetail}` , telNumber } // passwordCheck,
+    
+    console.log('axios 이전☆')
 
-    const data = {
-      email, password, nickname, address, addressDetail, telNumber
-    } // passwordCheck,
+    // js는 비동기 처리 → 작업 중 대기 시간을 기다리지 않고 따로 작동시켜놓고 다음 작업으로 넘어감
+    // 통신을 위한 axios, post : backend의 주소 담기, then : 작업 처리, catch : 에러 처리
+    //? 1. 비동기 처리 (then 방법)
+    axios.post(SIGN_UP_URL, data)
+    .then((response) => {
+      const { result, message, data } = response.data as ResponseDto<SignUpresponseDto>; 
 
-    console.log(data);
+      if(result) setLoginView(true);
+      else alert(message);
+      
+    })
+    .catch((error) => { 
+      console.log(error.response.status);
+    });
+
+    // await : 작업이 끝날 때 까지 기다리기 → 동기 처리
+    // 호출되는 함수의 매개변수 앞에 async 붙여서 동기처리 해줘야됨
+    // 도중에 에러 터지면 다음 작업 실행하지 않음
+    // const response = await axios.post("http://localhost:4040/auth/sign-up", data);
+
+    console.log('axios 이후★')
   }
 
   return (

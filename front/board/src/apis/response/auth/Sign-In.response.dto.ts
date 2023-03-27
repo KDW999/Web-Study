@@ -1,6 +1,6 @@
 interface ResponseDto{
 
-    address : String;
+    address : string;
     email : string;
     expiredTime : number;
     nickname : string;

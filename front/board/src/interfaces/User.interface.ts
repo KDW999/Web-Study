@@ -1,7 +1,7 @@
 interface User{
 
     email : string;
-    nickName : string;
+    nickname : string;
     telNumber : string;
     address : string;
     profile? : string | null;

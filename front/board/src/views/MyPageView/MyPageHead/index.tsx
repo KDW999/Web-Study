@@ -20,7 +20,7 @@ export default function MyPageHead() {
 
             <Box>
                 <IconButton onClick={onLogoutHandler}>
-                    <Avatar sx={{ height: '120px', width: '120px' }} alt={user?.nickname} src={user?.profile} />
+                    <Avatar sx={{ height: '120px', width: '120px' }} alt={user?.nickname} src={user?.profile ? user?.profile : ''} />
                 </IconButton>
             </Box>
 

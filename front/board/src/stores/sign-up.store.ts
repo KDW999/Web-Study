@@ -22,7 +22,7 @@ interface ISignUpStore{
     //  매개변수명만 다를 뿐 매개변수 타입은 String, 반환타입은 void이기 때문 오버로드와 유사?
     setEmail : (email : string) => void 
     setPassword : (password : string) => void
-    setPasswordCheck : (passwordCheck : string) =>void
+    setPasswordCheck : (passwordCheck : string) => void
     setNickname : (nickname : string) => void
     setTelNumber : (telNumber : string) => void
     setAddress : (address : string) => void

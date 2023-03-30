@@ -2,11 +2,12 @@ import { Avatar, Box, Typography, Card } from '@mui/material'
 import CardActionArea from '@mui/material/CardActionArea';
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
+import { GetListResponseDto, GetSearchListResponseDto } from 'src/apis/response/board';
 import { IPreviewItem } from 'src/interfaces'
 import { TypeFormatFlags } from 'typescript'
 
 interface Props {
-    item : IPreviewItem;
+    item : GetListResponseDto | GetSearchListResponseDto; // 데이터 타입의 내용물이 같아서 같은 것으로 인식하나 구분을 위해 타입을 일단 다 적어줌
 }
 
 export default function BoardListItem({item} : Props) {
@@ -19,11 +20,11 @@ export default function BoardListItem({item} : Props) {
             <Box>
                 <Box sx={{ display: 'flex' }}>
                     <Box sx={{ margin: '8px' }}>
-                        <Avatar alt= {item.writerNickname} src= {item.writerProfile} />
+                        <Avatar alt= {item.writerNickname} src= {item.writerProfileUrl ? item.writerProfileUrl : ""} />
                     </Box>
                     <Box>
                         <Typography sx={{ fontSize: '12px', fontWeight: 500, color: "#000000" }}>{item.writerNickname}</Typography>
-                        <Typography sx={{ mt: '2px', fontSize: '12px', fontWeight: 400, color: 'rgba(0, 0, 0, 0.7)' }}>{item.writeDate}</Typography>
+                        <Typography sx={{ mt: '2px', fontSize: '12px', fontWeight: 400, color: 'rgba(0, 0, 0, 0.7)' }}>{item.boardWriteDatetime}</Typography>
                     </Box>
                 </Box>
 
@@ -36,9 +37,9 @@ export default function BoardListItem({item} : Props) {
                     <Typography sx={{ fontSize: '12px', fontWeight: '400', color: 'rgba(0, 0, 0, 0.7)' }}>{`댓글 ${item.commentCount}· 좋아요 ${item.likeCount} · 조회수 ${item.viewCount}`}</Typography>
                 </Box>
             </Box>
-            {item.img && (
+            {item.boardImgUrl && (
             <Box>
-                <Box component = 'img' src = {item.img} sx = {{ hegiht : '152px', width : '152px', borderRadius : '5.0%'}}/>
+                <Box component = 'img' src = {item.boardImgUrl} sx = {{ hegiht : '152px', width : '152px', borderRadius : '5.0%'}}/>
             </Box>
             )}
             </CardActionArea>           

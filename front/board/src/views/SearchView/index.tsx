@@ -1,9 +1,13 @@
 import { Box, Grid, Pagination, Typography } from '@mui/material'
 import Stack from '@mui/material/Stack';
+import axios, { AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import ResponseDto from 'src/apis/response';
+import { GetSearchListResponseDto } from 'src/apis/response/board';
 import BoardListItem from 'src/components/BoardListItem';
 import PopularCard from 'src/components/PopularCard';
+import { GET_SEARCH_LIST_URL } from 'src/constants/api';
 import { usePagingHook } from 'src/hooks';
 import { IPreviewItem } from 'src/interfaces';
 import { BOARD_LIST } from 'src/mock';
@@ -13,7 +17,27 @@ export default function SearchView() {
 
   const { content } = useParams();
   const { viewList, boardList, COUNT, pageNumber, onPageHandler, setBoardList } = usePagingHook(5);
+  
+  const getSearchList = () => {
 
+    //? 받는 방법 1 : GET_SEARCH_LIST_URL + content / 상수, 변수 합쳐서
+    //? 받는 방법 2 : 함수로 만들어서 사용
+    axios.get(GET_SEARCH_LIST_URL(content as string))
+    .then((response) => getSearchListResponseHandler(response))
+    .catch((error) => getSearchListErrorHandler(error));
+  }
+
+  const getSearchListResponseHandler = (response : AxiosResponse<any, any>) => {
+
+    const { result, message, data } = response.data as ResponseDto<GetSearchListResponseDto[]>;
+    if(!result || data == null) return;
+    setBoardList(data)
+  }
+
+  const getSearchListErrorHandler = (error : any) => {
+    console.log(error.meesage);
+  }
+  
   // const COUNT = 5;
 
   // const [ boardList, setBoardList] = useState<IPreviewItem[]>([]);
@@ -36,13 +60,16 @@ export default function SearchView() {
   //      setViewList(tmpList);
   // }
 
+
+
   useEffect( () => {
     //# array.filter(요소 => 조건)
     //? 특정한 조건에 부합하는 요소만 모아서 새로운 배열로 만들어 반환하는 메서드 
     //# string.inclues(검색할 문자열)
     //? 해당 문자열에서 검색할 문자열이 존재한다면 true, 아니면 false를 반환하는 메서드
-    const tmp = BOARD_LIST.filter((board) => board.boardTitle.includes(content as string));
-    setBoardList(tmp);
+    // const tmp = BOARD_LIST.filter((board) => board.boardTitle.includes(content as string)); spring이랑 react 합치기 전 만들어 놓은 거
+
+    getSearchList();
   }, [content]);
 
   // useEffect(() =>{
@@ -65,7 +92,7 @@ export default function SearchView() {
               {viewList.length === 0 ? 
               (<Box sx = {{ height : '416px', display : 'flex', justifyContent : 'center', alignItems : 'center'}}>
                 <Typography sx = {{ fontSize : '24px', fontWeight : 500, color : 'rgba(0, 0, 0, 0.4)'}}>검색결과가 없습니다.</Typography>
-                </Box>) : viewList.map((boardItem) => (<BoardListItem item={boardItem as IPreviewItem} />))}
+                </Box>) : viewList.map((boardItem) => (<BoardListItem item={boardItem as GetSearchListResponseDto} />))}
             </Stack>
           </Grid>
           <Grid item sm={12} md={4}>

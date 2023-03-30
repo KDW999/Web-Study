@@ -1,4 +1,4 @@
-interface ResponseDto{
+interface Dto{
 
     address : string;
     email : string;
@@ -9,4 +9,4 @@ interface ResponseDto{
     token : string;
 }
 
-export default ResponseDto;
+export default Dto;

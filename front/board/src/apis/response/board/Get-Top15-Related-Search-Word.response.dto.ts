@@ -1,7 +1,7 @@
-interface ResponseDto {
+interface Dto {
 
     top15SearchWordList : string[];
     
 }
 
-export default ResponseDto
+export default Dto

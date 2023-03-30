@@ -8,12 +8,13 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Visibility from '@mui/icons-material/Visibility';
 import { USER } from 'src/mock'; import { useUserStore } from 'src/stores';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { SIGN_IN_URL } from 'src/constants/api';
 import { SignInDto } from 'src/apis/request/auth';
 import ResponseDto from 'src/apis/response';
 import { SignInResponseDto } from 'src/apis/response/auth';
 import { useCookies } from 'react-cookie';
+import { getExpires } from 'src/utils';
 
 
 
@@ -49,15 +50,23 @@ export default function LoginCardView({ setLoginView }: Props) {
     const data: SignInDto = { email, password };
     
     axios.post(SIGN_IN_URL, data)
-      .then((response) => {
-        const { result, message, data } = response.data as ResponseDto<SignInResponseDto>;
+      .then((response) => SignInResponseHandler(response))
+      .catch((error) => SignInErrorHandler(error)) // 에러 처리는 여기에 한 번에 다 몰아서하는 것 보단 할 수 있는 건 위에서 걸러주고 들어오기?
+  }
 
-        if (result && data) {
+  const SignInResponseHandler = (response : AxiosResponse<any, any>) => {
+    const { result, message, data } = response.data as ResponseDto<SignInResponseDto>;
+
+    if(!result || !data) {
+      
+      alert('로그인 정보가 잘못되었습니다.');
+      return;
+    }
+      
           const { token, expiredTime, ...user } = data;
           //? 로그인 처리
           //? 쿠키에 로그인 데이터 (Token) 보관
-          const now = new Date().getTime();
-          const expires = new Date(now + expiredTime);
+          const expires = getExpires(expiredTime);
           setCookie('accessToken', token, { expires });
 
           //? 스토어 유저 데이터 보관
@@ -65,15 +74,13 @@ export default function LoginCardView({ setLoginView }: Props) {
           navigator('/');
 
           alert('로그인 성공');
-        }
-        else alert('로그인 정보가 잘못되었습니다.');
-      })
-      .catch((error) => { // 에러 처리는 여기에 한 번에 다 몰아서하는 것 보단 할 수 있는 건 위에서 걸러주고 들어오기?
-        console.log(error.message);
-      });
-
-
   }
+
+  const SignInErrorHandler = (error : any) =>{
+    console.log(error.message);
+  }
+
+
   return (
 
     <Box display='flex' sx={{ height: '100%', flexDirection: 'column', justifyContent: 'space-between' }}>

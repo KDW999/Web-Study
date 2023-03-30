@@ -61,7 +61,8 @@ export default function NavigationBar() {
               onChange = {(event) => setContent(event.target.value)}
               />
             </FormControl> 
-          {path.pathname !== '/auth' && (user ? 
+          {path.pathname !== '/auth' && (
+            user ? 
           (
             <Button 
             variant = 'outlined' 

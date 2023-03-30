@@ -6,17 +6,17 @@ import { POPULAR_LIST } from 'src/mock';
 
 interface Props {
   title : string;
-
+  popularList : string[];
 }
 
-export default function PopularCard({ title } : Props) {
+export default function PopularCard({ title, popularList } : Props) {
 
-  const [popularList, setPopularList] = useState<string[]>([]);
+  // const [popularList, setPopularList] = useState<string[]>([]);
   const navigator = useNavigate();
 
-  useEffect(() => {
-    // setPopularList(POPULAR_LIST);
-  }, [])
+  // useEffect(() => {
+  //   // setPopularList(POPULAR_LIST);
+  // }, [])
 
   return (
     <Card variant='outlined' sx={{ p: '24px 12px 26px 24px' }}>

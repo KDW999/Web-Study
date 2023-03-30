@@ -1,15 +1,48 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Box, Input, Divider, IconButton, Fab } from '@mui/material'
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import CreateIcon from '@mui/icons-material/Create';
 import { useNavigate } from 'react-router-dom';
+import axios, { AxiosResponse } from 'axios';
+import ResponseDto from 'src/apis/response';
+import { PostBoardResponseDto } from 'src/apis/response/board';
+import { useCookies } from 'react-cookie';
+import { PostBoardDto } from 'src/apis/request/board';
+import { authorizationHeader, POST_BOARD_URL } from 'src/constants/api';
 
 export default function BoardWriteView() {
 
+    const [cookies] = useCookies();
     const [boardTitle, setBoardTitle] = useState<string>('');
     const [boardContent, setBoardContent] = useState<string>('');
+    const [boardImgUrl, setBoardImgUrl] = useState<string>('');
 
     const navigator = useNavigate();
+
+    const accessToken = cookies.accessToken;
+
+    const postBoard = () => {
+      const data : PostBoardDto = { boardTitle, boardContent, boardImgUrl};
+
+      axios.post(POST_BOARD_URL, data, authorizationHeader(accessToken))
+      .then((response) => postBoardResponseHandler(response))
+      .catch((error) => postBoardErrorHandler(error))
+    }
+
+    const postBoardResponseHandler = (response : AxiosResponse<any, any>) =>{
+
+      const { result, message, data} = response.data as ResponseDto<PostBoardResponseDto>;
+        if(!result || !data){
+          alert(message);
+          return;
+        }
+
+        navigator('/myPage');
+    }
+
+    const postBoardErrorHandler = (error : any) =>{
+      console.log(error.message);
+    }
 
     const onWriteHandler = () => {
       //? 제목 및 내용 검증 (값이 존재하는지)
@@ -17,26 +50,18 @@ export default function BoardWriteView() {
         alert('모든 내용을 입력해주세요.')
         return;
       }
-      //@ DB가 존재한다면 작성
-      //# User table
-      //^ userEmail VARCHAR(45) PK
-
-      //# Board table
-      //^ boardNumber INT AI PK
-      //^ boardTitle TEXT NOT NULL
-      //^ boardContent TEXT NOT NULL
-      //^ writeDate DATETIME NOT NULL
-      //^ writerEmail VARCHAR(45) FK NOT NULL
-      //^ likeCount INT DEFAULT 0
-      //^ commentCount INT DEFAULT 0
-      //^ viewCount INT DEFAULT 0
-
-      //? INSERT INTO Board(boardTitle, boardContent, writeDate, writerEmail) 
-      //? VALUES (?, ?, now(), ?);
-
-      //? BackEnd로 boardTitle, boardContent, writerEmail만 넘겨주면 됨
-      navigator('/myPage');
+      // navigator('/myPage');
+      postBoard()
     }
+
+    useEffect( () => {
+
+      if(!accessToken){
+        alert("로그인이 필요한 작업입니다.")
+        navigator('/auth')
+      }
+
+    }, [])
 
     return (
         <Box sx={{ p: '0px 198px', backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>

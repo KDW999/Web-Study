@@ -30,7 +30,7 @@ interface Dto {
             "userNickname": string,
             "userProfileUrl": string | null
         }
-    ]
+    ];
 }
 
 export default Dto

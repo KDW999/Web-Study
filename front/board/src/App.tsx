@@ -60,7 +60,7 @@ function App() {
     
     if(accessToken) getUser(accessToken);
     
-  },[])
+  },[path])
 
   return (
     <>

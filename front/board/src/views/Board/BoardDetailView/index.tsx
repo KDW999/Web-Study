@@ -9,23 +9,33 @@ import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { BOARD_LIST, COMMENT_LIST, LIKE_LIST } from 'src/mock';
-import { ICommentItem, ILikeUser, IPreviewItem } from 'src/interfaces';
+import { Board, ICommentItem, ILikeUser, IPreviewItem, Liky, Comment } from 'src/interfaces';
 import { useUserStore } from 'src/stores';
 import LikeListItem from 'src/components/LikeListItem';
 import CommentListItem from 'src/components/CommentListItem';
 import { usePagingHook } from 'src/hooks';
 import { getPageCount } from 'src/utils';
+import axios, { AxiosResponse } from 'axios';
+import { GetBoardResponseDto } from 'src/apis/response/board';
+import ResponseDto from 'src/apis/response';
+import { GET_BOARD_URL } from 'src/constants/api';
 
 export default function BoardDetailView() {
 
     const [anchorElement, setAnchorElement] = useState<null | HTMLElement>(null);
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [menuFlag, setMenuFlag] = useState<boolean>(false);
-    const [board, setBoard] = useState<null | IPreviewItem>(null);
+
+    const [board, setBoard] = useState<Board | null>(null);
+
     const [likeStatus, setLikeStatus] = useState<boolean>(false);
     const [openLike, setOpenLike] = useState<boolean>(false);
-    const [likeList, setLikeList] = useState<ILikeUser[]>([]);
+    const [likeList, setLikeList] = useState<Liky[]>([]);
+
     const [openComment, setOpenComment] = useState<boolean>(false);
+
+    let isLoad = false;
+    const [commentList, setCommentList] = useState<Comment[]>([]);
 
     const { boardList, setBoardList, viewList, COUNT, pageNumber, onPageHandler } = usePagingHook(3);
 
@@ -33,6 +43,40 @@ export default function BoardDetailView() {
     const navigator = useNavigate();
 
     const { user } = useUserStore();
+
+    const getBoard = () => {
+        if(board) return;
+        axios.get(GET_BOARD_URL(boardNumber as string))
+        .then((response) => getBoardResponseHandler(response))
+        .catch((error) => getBoardErrorHandler(error));
+    }
+
+    const getBoardResponseHandler = (response : AxiosResponse<any, any>) => {
+
+        const { result, message, data} = response.data as ResponseDto<GetBoardResponseDto>
+        if(!result || !data){
+            alert(message);
+            navigator('/');
+            return;
+        }
+
+        const { board, commentList, likeList} = data;
+        setBoard(board);
+
+        //? 댓글 리스트를 3개 까지 보여주도록 하는 LOGIC
+        setBoardList(commentList);
+        setLikeList(likeList);
+
+        const owner = user !== null && board.writerEmail === user.email;
+        console.log(board.writerEmail);
+        setMenuFlag(owner); 
+    }
+
+    const getBoardErrorHandler = (error : any) => {
+
+        console.log(error.message);
+
+    }
 
     const onMenuClickHandler = (event: MouseEvent<HTMLButtonElement>) => {
         setAnchorElement(event.currentTarget);
@@ -45,26 +89,30 @@ export default function BoardDetailView() {
     }
 
     useEffect(() => {
+        if(isLoad) return;
+
         //? boardNumber가 존재하는지 검증
         if (!boardNumber) {
             navigator('/');
             return;
         }
+
+        isLoad = true; // useEffect() 2번 도는 거 방지하려면 변수 만들어서 빠져나가기
+
         //? BOARD_LIST에서 boardNumber에 해당하는 board를 가져옴
-        const board = BOARD_LIST.find((boardItem) => boardItem.boardNumber === parseInt(boardNumber));
+        // const board = BOARD_LIST.find((boardItem) => boardItem.boardNumber === parseInt(boardNumber));
         //? 검색한 결과가 존재하는지 검증
-        if (!board) {
-            navigator('/');
-            return;
-        }
+        // if (!board) {
+        //     navigator('/');
+        //     return;
+        // }
 
-        setLikeList(LIKE_LIST);
-
-        const owner = user !== null && user.nickname === board.writerNickname;
-        setMenuFlag(owner);
-        setBoard(board);
-
-        setBoardList(COMMENT_LIST);
+        getBoard();
+        // setLikeList(LIKE_LIST);
+        // const owner = user !== null && user.nickname === board.writerNickname;
+        // setMenuFlag(owner);
+        // setBoard(board);
+        // setBoardList(COMMENT_LIST);
     }, [])
 
     return (
@@ -74,10 +122,10 @@ export default function BoardDetailView() {
                     <Typography sx={{ fontSize: '32px', fontWeight: 500 }}>{board?.boardTitle}</Typography>
                     <Box sx={{ mt: '20px', display: 'flex', justifyContent: 'space-between' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar src={board?.writerProfile} sx={{ height: '32px', width: '32px', mr: '8px' }} />
+                            <Avatar src={board?.writerProfileUrl ? board.writerProfileUrl : ''} sx={{ height: '32px', width: '32px', mr: '8px' }} />
                             <Typography sx={{ mr: '8px', fontSize: '16px', fontWeight: 500 }}>{board?.writerNickname}</Typography>
                             <Divider sx={{ mr: '8px' }} orientation='vertical' variant='middle' flexItem />
-                            <Typography sx={{ fontSize: '16px', fontWeight: 400, opacity: 0.4 }}>{board?.writeDate}</Typography>
+                            <Typography sx={{ fontSize: '16px', fontWeight: 400, opacity: 0.4 }}>{board?.boardWriteDatetime}</Typography>
                         </Box>
                         {menuFlag && (
                             <IconButton onClick={(event) => onMenuClickHandler(event)}>
@@ -94,7 +142,7 @@ export default function BoardDetailView() {
                 <Divider sx={{ mr: '40px 0px' }} />
                 <Box>
                     <Typography sx={{ fontSize: '18px', fontWeight: 500, opacity: 0.7 }}>{board?.boardContent}</Typography>
-                    {board?.img && (<Box sx={{ width: '100%', mt: '20px' }} component='img' src={board?.img} />)}
+                    {board?.boardImgUrl && (<Box sx={{ width: '100%', mt: '20px' }} component='img' src={board?.boardImgUrl} />)}
                 </Box>
                 <Box sx={{ display: 'flex', mt: '20px' }}>
                     <Box sx={{ mr: '20px', display: 'flex' }}>
@@ -117,15 +165,16 @@ export default function BoardDetailView() {
                     </Box>
                 </Box>
             </Box>
-            {openLike && (
-                <Box sx={{ mt: '20px' }}>
-                    <Card variant='outlined' sx={{ p: '20px' }}>
+            {
+                openLike && (
+                   <Box sx={{ mt: '20px' }}>
+                      <Card variant='outlined' sx={{ p: '20px' }}>
                         <Typography>좋아요 {board?.likeCount}</Typography>
                         <Box sx={{ m: '20px 0px', display: 'table' }}>
                             {likeList.map((likeUser) => (<LikeListItem likeUser={likeUser} />))}
                         </Box>
                     </Card>
-                </Box>
+                   </Box>
             )}
 
             <Box>
@@ -136,7 +185,7 @@ export default function BoardDetailView() {
                             <Box sx={{ p: '20px', mb : '30px' }}>
                                 <Typography sx={{ fontSize: '16px', fontWeight: 500 }}>댓글 {boardList.length}</Typography>
                                 <Stack sx={{ p: '20px 0px' }} spacing={3.75}>
-                                    {viewList.map((commentItem) => (<CommentListItem item = {commentItem as ICommentItem}/>))}
+                                    {viewList.map((commentItem) => (<CommentListItem item = {commentItem as Comment}/>))}
                                 </Stack>
                             </Box>
 

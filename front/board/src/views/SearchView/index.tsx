@@ -4,10 +4,10 @@ import axios, { AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ResponseDto from 'src/apis/response';
-import { GetSearchListResponseDto } from 'src/apis/response/board';
+import { GetSearchListResponseDto, GetTop15RelatedSearchWordResponseDto } from 'src/apis/response/board';
 import BoardListItem from 'src/components/BoardListItem';
 import PopularCard from 'src/components/PopularCard';
-import { GET_SEARCH_LIST_URL } from 'src/constants/api';
+import { GET_SEARCH_LIST_URL, GET_TOP15_RELATED_SEARCH_WORD_URL } from 'src/constants/api';
 import { usePagingHook } from 'src/hooks';
 import { IPreviewItem } from 'src/interfaces';
 import { BOARD_LIST } from 'src/mock';
@@ -17,6 +17,8 @@ export default function SearchView() {
 
   const { content } = useParams();
   const { viewList, boardList, COUNT, pageNumber, onPageHandler, setBoardList } = usePagingHook(5);
+
+  const [popularList, setPopularList] = useState<string[]>([]);
   
   const getSearchList = () => {
 
@@ -25,6 +27,25 @@ export default function SearchView() {
     axios.get(GET_SEARCH_LIST_URL(content as string))
     .then((response) => getSearchListResponseHandler(response))
     .catch((error) => getSearchListErrorHandler(error));
+  }
+
+  const getTop15RelatedSearchWord = () => {
+    axios.get(GET_TOP15_RELATED_SEARCH_WORD_URL(content as string))
+    .then((response) => getTop15RelatedSearchWordResponseHandler(response))
+    .catch((error) => getTop15RelatedSearchWordErrorHandler(error));
+  }
+
+  const getTop15RelatedSearchWordResponseHandler = (response : AxiosResponse<any,any>) => {
+
+    const {result, message, data} = response.data as ResponseDto<GetTop15RelatedSearchWordResponseDto>;
+    if(!result || !data) return;
+
+    setPopularList(data.top15SearchWordList);
+
+  }
+
+  const getTop15RelatedSearchWordErrorHandler = (error : any) => {
+     console.log(error.message);
   }
 
   const getSearchListResponseHandler = (response : AxiosResponse<any, any>) => {
@@ -70,6 +91,7 @@ export default function SearchView() {
     // const tmp = BOARD_LIST.filter((board) => board.boardTitle.includes(content as string)); spring이랑 react 합치기 전 만들어 놓은 거
 
     getSearchList();
+    getTop15RelatedSearchWord();
   }, [content]);
 
   // useEffect(() =>{
@@ -96,7 +118,7 @@ export default function SearchView() {
             </Stack>
           </Grid>
           <Grid item sm={12} md={4}>
-          <PopularCard title='연관 검색어' />
+          <PopularCard title='연관 검색어' popularList={popularList} />
           </Grid>
         </Grid>
       </Box>

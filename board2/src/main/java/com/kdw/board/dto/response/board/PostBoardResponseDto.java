@@ -22,7 +22,7 @@ public class PostBoardResponseDto {
     @ApiModelProperty(value = "게시물 Entity", required = true)
     private BoardEntity board;
 
-    @ApiModelProperty(value = "조항요 Entity List", required = true)
+    @ApiModelProperty(value = "좋아요 Entity List", required = true)
     private List<LikyEntity> likeList;
 
     @ApiModelProperty(value = "댓글 Entity List", required = true)

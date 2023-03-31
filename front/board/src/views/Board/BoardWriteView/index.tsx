@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, ChangeEvent } from 'react'
 import { Box, Input, Divider, IconButton, Fab } from '@mui/material'
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import CreateIcon from '@mui/icons-material/Create';
@@ -8,14 +8,17 @@ import ResponseDto from 'src/apis/response';
 import { PostBoardResponseDto } from 'src/apis/response/board';
 import { useCookies } from 'react-cookie';
 import { PostBoardDto } from 'src/apis/request/board';
-import { authorizationHeader, POST_BOARD_URL } from 'src/constants/api';
+import { authorizationHeader, FILE_UPLOAD_URL, multipartHeader, POST_BOARD_URL } from 'src/constants/api';
 
 export default function BoardWriteView() {
+
+    const imageRef = useRef<HTMLInputElement | null>(null); // 밑에 input타입에 사진 넣기 위해 사용된 것, dom을 담는다?
 
     const [cookies] = useCookies();
     const [boardTitle, setBoardTitle] = useState<string>('');
     const [boardContent, setBoardContent] = useState<string>('');
     const [boardImgUrl, setBoardImgUrl] = useState<string>('');
+
 
     const navigator = useNavigate();
 
@@ -42,6 +45,36 @@ export default function BoardWriteView() {
 
     const postBoardErrorHandler = (error : any) =>{
       console.log(error.message);
+    }
+
+    const onImageUploadButtonHandler = () => {
+      if(!imageRef.current) return; //? imageRef에 값이 없다면 리턴
+      
+      imageRef.current.click();
+    }
+
+    const onImageUploadChangeHandler = (event : ChangeEvent<HTMLInputElement>) => {
+      if(!event.target.files) return;
+
+      console.log(event.target.files[0]); //? 내가 올린 파일에 대한 정보
+
+      const data = new FormData();
+      data.append('file', event.target.files[0]);
+      
+      axios.post(FILE_UPLOAD_URL, data, multipartHeader())
+      .then((response) => imageUploadResponseHandler(response))
+      .catch((error) => imageUploadErrorHandler(error));
+    }
+
+    const imageUploadResponseHandler = (response : AxiosResponse<any,any>) => {
+
+      const imageUrl = response.data as string;
+      if(!imageUrl) return;
+      setBoardImgUrl(imageUrl);
+    }
+
+    const imageUploadErrorHandler = (error : any) => {
+        console.log(error.message);
     }
 
     const onWriteHandler = () => {
@@ -74,17 +107,25 @@ export default function BoardWriteView() {
                     onChange = {(event) => setBoardTitle(event.target.value)}/>
                 <Divider sx={{ m: '40px 0px' }} />
                 <Box sx = {{ display : 'flex', alignItems : 'start'}}>
+
+                <Box sx = {{ width : '100%'}}>
                    <Input 
                     fullWidth 
                     disableUnderline
                     multiline
-                    minRows={20}
+                    minRows={3}
                     placeholder = '본문을 작성해 주세요'
                     sx = {{ fontSize : '18px', fontWeight : 500, lineHeight : '150%'}}
                     onChange = {(event) => setBoardContent(event.target.value)}/>
-                   <IconButton>
+                 <Box component= 'img' src = {boardImgUrl}/>
+                 </Box>
+
+                   <IconButton onClick = {() => onImageUploadButtonHandler()}>
                      <ImageOutlinedIcon/>
+                     <input ref = {imageRef} hidden type = 'file' accept = 'image/*' onChange={(event) => onImageUploadChangeHandler(event)}/>
                    </IconButton>
+                 
+
                 </Box>
             </Box>
             <Fab 

@@ -1,8 +1,7 @@
+import { useNavigate } from 'react-router-dom';
+
 import { Box, Card, Typography } from '@mui/material'
 import Chip from '@mui/material/Chip'
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import { POPULAR_LIST } from 'src/mock';
 
 interface Props {
   title : string;
@@ -12,11 +11,8 @@ interface Props {
 export default function PopularCard({ title, popularList } : Props) {
 
   // const [popularList, setPopularList] = useState<string[]>([]);
+  //          HooK          //
   const navigator = useNavigate();
-
-  // useEffect(() => {
-  //   // setPopularList(POPULAR_LIST);
-  // }, [])
 
   return (
     <Card variant='outlined' sx={{ p: '24px 12px 26px 24px' }}>

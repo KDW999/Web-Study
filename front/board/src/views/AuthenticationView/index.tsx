@@ -1,14 +1,10 @@
 //? Box 컴포넌트 : mui에서 공간를 할당하는 모든 태그를 포함
 //? Grid 컴포넌트 : mui에서 공간을 12등분하여 가로 사이즈에 따라 반응형 웹 개발을 지원
 //? Typography 컴포넌트 : mui에서 글자를 출력하는 모든 태그 포함
-import {
-  Box, Grid, Typography, Card, TextField, FormControl, InputLabel, Input, InputAdornment,
-  IconButton,
-  Button
-} from '@mui/material'
 import React, { useState } from 'react'
+import { Box, Grid, Typography, Card } from '@mui/material'
 import ContentPasteTwoToneIcon from '@mui/icons-material/ContentPasteTwoTone';
-import { fontWeight } from '@mui/system';
+
 import LoginCardView from './LoginCardView';
 import SignUpCardView from './SignUpCardView';
 
@@ -18,6 +14,7 @@ import SignUpCardView from './SignUpCardView';
 
 export default function AuthenticationView() {
 
+  //          Hook          //
   const [loginView, setLoginView] = useState<boolean>(true); // 상태변화를 위한 기준을 뭐로 해줄지 자기가 생각해서 고르기
 
   return (

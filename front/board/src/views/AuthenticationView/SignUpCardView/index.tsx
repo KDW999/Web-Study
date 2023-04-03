@@ -1,4 +1,6 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
+
+import axios, { AxiosResponse } from 'axios';
 import {
   Box, Grid, Typography, Card, TextField, FormControl, InputLabel, Input, InputAdornment,
   IconButton,
@@ -6,16 +8,18 @@ import {
 } from '@mui/material'
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Visibility from '@mui/icons-material/Visibility';
-import { useSignUpStore } from 'src/stores'; // export는 중괄호 써서 가져와라
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-import axios, { AxiosResponse } from 'axios';
+
+import { useSignUpStore } from 'src/stores'; // export는 중괄호 써서 가져와라
 import { SignUpDto } from 'src/apis/request/auth';
 import  ResponseDto from 'src/apis/response';
 import { SignUpresponseDto } from 'src/apis/response/auth';
 import { SIGN_UP_URL } from 'src/constants/api';
 
+//          Component          //
 function FirstPage() {
 
+  //          Hook          //
   const { email, password, passwordCheck} = useSignUpStore();
   const { setEmail, setPassword, setPasswordCheck } = useSignUpStore();
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -72,7 +76,10 @@ function FirstPage() {
   )
 }
 
+//          Component          //
 function SecondPage() {
+
+  //          Hook          //
   const{nickname, telNumber, address, addressDetail} = useSignUpStore();
   const{setNickname, setTelNumber, setAddress, setAddressDetail} = useSignUpStore();
 
@@ -119,11 +126,13 @@ interface Props {
 }
 export default function SignUpCardView({ setLoginView }: Props) {
 
+  //          Hook          //
   const { email, password, passwordCheck } = useSignUpStore();
-  const [page, setPage] = useState<number>(1);
   const { nickname, address, addressDetail, telNumber} = useSignUpStore();
 
+  const [page, setPage] = useState<number>(1);
 
+  //          Event Handler          //
   const onNextButtonHandler = () => {
     //todo : 이메일 / 비밀번호 / 비밀번호 확인 검증
     //? 해당 문자열 변수가 빈값인지 확인
@@ -178,6 +187,7 @@ export default function SignUpCardView({ setLoginView }: Props) {
     console.log('axios 이후★')
   }
 
+  //          Response Handler          //
   const signUpResponseHandler = (response : AxiosResponse<any, any>) => {
 
     const { result, message, data } = response.data as ResponseDto<SignUpresponseDto>; 
@@ -186,6 +196,7 @@ export default function SignUpCardView({ setLoginView }: Props) {
       else alert(message);
   }
 
+  //          Error Handler          //
   const signUpErrorHandler = (error : any) => {
     console.log(error.response.status);
   }

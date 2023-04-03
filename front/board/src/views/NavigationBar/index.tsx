@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -9,18 +11,22 @@ import InputBase from '@mui/material/InputBase';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import { Button, FormControl, InputAdornment, OutlinedInput } from '@mui/material';
-import { useNavigate, useLocation } from 'react-router-dom';
+
 import { useUserStore } from 'src/stores';
 
 export default function NavigationBar() {
 
-  const [content, setContent] = useState<string>(''); // 초기화값이 없으면 undefined 타입이 설정됨
-
-  const { user } = useUserStore();
-
+  //          HooK          //
   const navigator = useNavigate();
+  
   const path = useLocation();
 
+  const { user } = useUserStore();
+  const [content, setContent] = useState<string>(''); // 초기화값이 없으면 undefined 타입이 설정됨
+
+
+
+  //          Event Handler          //
   const onSearchHandler = () => {
      if(!content.trim()) {
       alert('검색어를 입력하세요.');

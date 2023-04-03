@@ -1,10 +1,9 @@
+import { useNavigate } from 'react-router-dom';
+
 import { Avatar, Box, Typography, Card } from '@mui/material'
 import CardActionArea from '@mui/material/CardActionArea';
-import React from 'react'
-import { useNavigate } from 'react-router-dom';
+
 import { GetListResponseDto, GetMyListResponseDto, GetSearchListResponseDto } from 'src/apis/response/board';
-import { IPreviewItem } from 'src/interfaces'
-import { TypeFormatFlags } from 'typescript'
 
 interface Props {
     item : GetListResponseDto | GetSearchListResponseDto | GetMyListResponseDto; // 데이터 타입의 내용물이 같아서 같은 것으로 인식하나 구분을 위해 타입을 일단 다 적어줌
@@ -12,6 +11,7 @@ interface Props {
 
 export default function BoardListItem({item} : Props) {
 
+    //          HooK          //
     const navigator = useNavigate();
 
     return (

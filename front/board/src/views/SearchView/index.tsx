@@ -1,12 +1,14 @@
-import { Box, Grid, Pagination, Typography } from '@mui/material'
-import Stack from '@mui/material/Stack';
-import axios, { AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react'
+
+import axios, { AxiosResponse } from 'axios';
+import Stack from '@mui/material/Stack';
+import { Box, Grid, Pagination, Typography } from '@mui/material'
 import { useParams } from 'react-router-dom'
+
 import ResponseDto from 'src/apis/response';
-import { GetSearchListResponseDto, GetTop15RelatedSearchWordResponseDto } from 'src/apis/response/board';
 import BoardListItem from 'src/components/BoardListItem';
 import PopularCard from 'src/components/PopularCard';
+import { GetSearchListResponseDto, GetTop15RelatedSearchWordResponseDto } from 'src/apis/response/board';
 import { GET_SEARCH_LIST_URL, GET_TOP15_RELATED_SEARCH_WORD_URL } from 'src/constants/api';
 import { usePagingHook } from 'src/hooks';
 import { IPreviewItem } from 'src/interfaces';
@@ -15,13 +17,20 @@ import { getPageCount } from 'src/utils';
 
 export default function SearchView() {
 
+  //          HooK          //
   const { content } = useParams();
   const { viewList, boardList, COUNT, pageNumber, onPageHandler, setBoardList } = usePagingHook(5);
 
   const [popularList, setPopularList] = useState<string[]>([]);
   
-  const getSearchList = () => {
+  //          Event Handler          //
+  const getTop15RelatedSearchWord = () => {
+    axios.get(GET_TOP15_RELATED_SEARCH_WORD_URL(content as string))
+    .then((response) => getTop15RelatedSearchWordResponseHandler(response))
+    .catch((error) => getTop15RelatedSearchWordErrorHandler(error));
+  }
 
+  const getSearchList = () => {
     //? 받는 방법 1 : GET_SEARCH_LIST_URL + content / 상수, 변수 합쳐서
     //? 받는 방법 2 : 함수로 만들어서 사용
     axios.get(GET_SEARCH_LIST_URL(content as string))
@@ -29,25 +38,14 @@ export default function SearchView() {
     .catch((error) => getSearchListErrorHandler(error));
   }
 
-  const getTop15RelatedSearchWord = () => {
-    axios.get(GET_TOP15_RELATED_SEARCH_WORD_URL(content as string))
-    .then((response) => getTop15RelatedSearchWordResponseHandler(response))
-    .catch((error) => getTop15RelatedSearchWordErrorHandler(error));
-  }
-
+  //          Response Handler          //
   const getTop15RelatedSearchWordResponseHandler = (response : AxiosResponse<any,any>) => {
 
     const {result, message, data} = response.data as ResponseDto<GetTop15RelatedSearchWordResponseDto>;
     if(!result || !data) return;
 
     setPopularList(data.top15SearchWordList);
-
   }
-
-  const getTop15RelatedSearchWordErrorHandler = (error : any) => {
-     console.log(error.message);
-  }
-
   const getSearchListResponseHandler = (response : AxiosResponse<any, any>) => {
 
     const { result, message, data } = response.data as ResponseDto<GetSearchListResponseDto[]>;
@@ -55,34 +53,11 @@ export default function SearchView() {
     setBoardList(data)
   }
 
-  const getSearchListErrorHandler = (error : any) => {
-    console.log(error.meesage);
-  }
-  
-  // const COUNT = 5;
+  //          Error Handler          //
+  const getTop15RelatedSearchWordErrorHandler = (error : any) =>  console.log(error.message);
+  const getSearchListErrorHandler = (error : any) => console.log(error.meesage);
 
-  // const [ boardList, setBoardList] = useState<IPreviewItem[]>([]);
-  // const [ viewList, setViewList ] = useState<IPreviewItem[]>([]);
-  // const [ pageNumber, setPageNumber ] = useState<number>(1);
-
-
-  // const onPageHandler = (page : number) => {
-  //      setPageNumber(page);
-
-  //      const tmpList : IPreviewItem[] = [];
-  //      const startIndex = COUNT * (page - 1);
-  //      const endIndex = COUNT * page - 1;
-
-  //      for(let index=startIndex; index <= endIndex; index++){
-  //       if(boardList.length < index+1) break;
-  //        tmpList.push(boardList[index]);
-  //      }
-
-  //      setViewList(tmpList);
-  // }
-
-
-
+  //          Use Effect          //
   useEffect( () => {
     //# array.filter(요소 => 조건)
     //? 특정한 조건에 부합하는 요소만 모아서 새로운 배열로 만들어 반환하는 메서드 

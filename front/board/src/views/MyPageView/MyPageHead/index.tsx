@@ -1,37 +1,38 @@
 import React, { ChangeEvent, useEffect, useRef } from 'react'
-import { Box, Typography, IconButton, Avatar } from '@mui/material'
-
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import { useUserStore } from 'src/stores';
 import { useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
+
 import axios, { AxiosResponse } from 'axios';
+import { Box, Typography, IconButton, Avatar } from '@mui/material'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+
+import ResponseDto from 'src/apis/response';
+import { useUserStore } from 'src/stores';
 import { authorizationHeader, FILE_UPLOAD_URL, multipartHeader, PATCH_PROFILE_URL } from 'src/constants/api';
 import { PatchProfileDto } from 'src/apis/request/user';
 import { PatchProfileResponseDto } from 'src/apis/response/user';
-import ResponseDto from 'src/apis/response';
-import { useCookies } from 'react-cookie';
 
 export default function MyPageHead() {
 
+    //          HooK          //
     const imageRef = useRef<HTMLInputElement | null>(null);
 
+    const navigator = useNavigate();
     const [cookies, setCookies] = useCookies();
     const { user, setUser, resetUser } = useUserStore();
-    const navigator = useNavigate();
 
     const accessToken = cookies.accessToken;
 
+    //          Event Handler          //
     const onLogoutHandler = () => {
+        // TODO : 로그아웃 처리 안됨 해결
         setCookies('accessToken', '', { expires : new Date() });
         resetUser();
         navigator('/');
     }
 
-    const onProfileUploadButtonHandler = () => {
-         if(!imageRef.current) return;
-         imageRef.current.click();
-    }
-
+    // TODO : BoardDetailView, BoardUpdateView, MyPageHead에서 중복
+    // TODO : Hook 또는 외부 함수로 변경
     const onProfileUploadChangeHandler = (event : ChangeEvent<HTMLInputElement>) => {
          if(!event.target.files) return;
          const data = new FormData();
@@ -42,7 +43,13 @@ export default function MyPageHead() {
          .then((response) => imageUploadResponseHandler(response))
          .catch((error) => imageUploadErrorHanndler(error));
     }
+    
+    const onProfileUploadButtonHandler = () => {
+        if(!imageRef.current) return;
+        imageRef.current.click();
+   }
 
+    //          Response Handler          //
     const imageUploadResponseHandler = (response : AxiosResponse<any, any>) => {
 
         const profile = response.data as string;
@@ -54,10 +61,6 @@ export default function MyPageHead() {
 
     }
 
-    const imageUploadErrorHanndler = (error : any) =>  {
-        console.log(error.message);
-    }
-
     const patchProfileResponseHandler = (response : AxiosResponse<any, any>) => {
 
         const {result, message, data} = response.data as ResponseDto<PatchProfileResponseDto>;
@@ -67,12 +70,11 @@ export default function MyPageHead() {
         }
         setUser(data);
     }
+    //          Error Handler          //
+    const imageUploadErrorHanndler = (error : any) =>  console.log(error.message);
+    const patchProfileErrorHandler = (error : any) =>  console.log(error.message);
 
-    const patchProfileErrorHandler = (error : any) => {
-        console.log(error.message);
-    }
-    
-
+    //          Use Effect          //
     useEffect( () => {
 
         if(!accessToken){

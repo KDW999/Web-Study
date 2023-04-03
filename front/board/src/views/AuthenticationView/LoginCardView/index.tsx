@@ -1,37 +1,52 @@
+import React, { useState, Dispatch, SetStateAction, useRef, KeyboardEvent } from 'react'
+import { useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
+
+import axios, { AxiosResponse } from 'axios'
 import {
   Box, Grid, Typography, Card, TextField, FormControl, InputLabel, Input, InputAdornment,
   IconButton,
   Button
 } from '@mui/material'
-import React, { useState, Dispatch, SetStateAction } from 'react'
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import Visibility from '@mui/icons-material/Visibility';
-import { USER } from 'src/mock'; import { useUserStore } from 'src/stores';
-import { useNavigate } from 'react-router-dom';
-import axios, { AxiosResponse } from 'axios'
+import {VisibilityOff, Visibility} from '@mui/icons-material';
+
+import { USER } from 'src/mock'; 
+import { useUserStore } from 'src/stores';
 import { SIGN_IN_URL } from 'src/constants/api';
 import { SignInDto } from 'src/apis/request/auth';
 import ResponseDto from 'src/apis/response';
 import { SignInResponseDto } from 'src/apis/response/auth';
-import { useCookies } from 'react-cookie';
 import { getExpires } from 'src/utils';
-
-
 
 interface Props {
   setLoginView: Dispatch<SetStateAction<boolean>>
 }
 export default function LoginCardView({ setLoginView }: Props) {
 
-  const [cookies, setCookie] = useCookies();
+  //          Hook          //
+  const navigator = useNavigate();
+  const passwordRef = useRef<HTMLInputElement | null>(null);
 
+  const { setUser } = useUserStore();
+
+  const [cookies, setCookie] = useCookies();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const { setUser } = useUserStore();
+  const [loginError, setLoginError] = useState<boolean>(false);
 
-  const navigator = useNavigate();
+  //          Event Handler          //
+  const onEmailKeyPressHandler = (event : KeyboardEvent<HTMLDivElement>) => {
+    if(event.key !== 'Enter') return;
+    if(!passwordRef.current) return;
+    (passwordRef as any).current?.lastChild?.firstChild?.focus();
+  }
 
+  const onPasswordKeyPressHandler = (event : KeyboardEvent<HTMLDivElement>) => {
+    if(event.key !== 'Enter') return;
+    onLoginHandler();
+
+  }
   const onLoginHandler = () => {
     //? email 입력했는지 검증 / password 입력했는지 검증
     if (!email.trim() || !password) {
@@ -51,14 +66,15 @@ export default function LoginCardView({ setLoginView }: Props) {
     
     axios.post(SIGN_IN_URL, data)
       .then((response) => SignInResponseHandler(response))
-      .catch((error) => SignInErrorHandler(error)) // 에러 처리는 여기에 한 번에 다 몰아서하는 것 보단 할 수 있는 건 위에서 걸러주고 들어오기?
-  }
+      .catch((error) => SignInErrorHandler(error)); // 에러 처리는 여기에 한 번에 다 몰아서하는 것 보단 할 수 있는 건 위에서 걸러주고 들어오기?
+  };
 
+  //          Response Handler          //
   const SignInResponseHandler = (response : AxiosResponse<any, any>) => {
     const { result, message, data } = response.data as ResponseDto<SignInResponseDto>;
 
     if(!result || !data) {
-      
+      setLoginError(true);
       alert('로그인 정보가 잘못되었습니다.');
       return;
     }
@@ -76,18 +92,18 @@ export default function LoginCardView({ setLoginView }: Props) {
           alert('로그인 성공');
   }
 
-  const SignInErrorHandler = (error : any) =>{
-    console.log(error.message);
-  }
-
+  //          Error Handler          //
+  const SignInErrorHandler = (error : any) => console.log(error.message);
 
   return (
 
     <Box display='flex' sx={{ height: '100%', flexDirection: 'column', justifyContent: 'space-between' }}>
       <Box>
         <Typography variant='h4' fontWeight='900'>로그인</Typography>
-        <TextField sx={{ mt: '40px' }} fullWidth label="이메일 주소" variant="standard" onChange={(event) => setEmail(event.target.value)} />
-        <FormControl fullWidth variant="standard" sx={{ mt: '40px' }}>
+        <TextField error = {loginError} sx={{ mt: '40px' }} fullWidth label="이메일 주소" variant="standard" 
+        onChange={(event) => setEmail(event.target.value)} 
+        onKeyPress={(event) => onEmailKeyPressHandler(event)}/>
+        <FormControl error = {loginError} ref = {passwordRef} fullWidth variant="standard" sx={{ mt: '40px' }}>
           <InputLabel>비밀번호</InputLabel>
           <Input
             type={showPassword ? 'text' : 'password'}
@@ -101,14 +117,22 @@ export default function LoginCardView({ setLoginView }: Props) {
               </InputAdornment>
             }
             onChange={(event) => setPassword(event.target.value)}
+            onKeyPress={(event) => onPasswordKeyPressHandler(event)}
           />
         </FormControl>
       </Box>
 
       <Box>
+        {
+          loginError && (
+          <Box sx = {{ mb : '12px'}}>
+          <Typography sx ={{ fontsize : '12px', color : 'red', opacity : 0.7 }}>이메일 주소 또는 비밀번호를 잘못 입력했습니다.</Typography>
+          <Typography sx ={{ fontsize : '12px', color : 'red', opacity : 0.7 }}>입력하신 내용을 다시 확인해 주세요.</Typography>
+          </Box>
+          ) }
         <Button sx={{ mb: '20px' }} fullWidth variant="contained" size='large' onClick={onLoginHandler}>로그인</Button>
         <Typography textAlign={'center'}>신규 사용자이신가요?
-          <Typography component='span' fontWeight={900} onClick={() => setLoginView(false)}> 회원가입</Typography>
+          <Typography component='span' fontWeight={900} onClick={() => setLoginView(false)}>{" "} 회원가입</Typography>
           {/*클릭하는 순간 부모에 있는 <LoginCardView setLoginView={setLoginView}/>이 false로 바뀐다*/}
         </Typography>
       </Box>

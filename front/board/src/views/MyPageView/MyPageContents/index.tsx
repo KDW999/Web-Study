@@ -1,36 +1,43 @@
 import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
+
 import { Box, Grid, Pagination, Typography, Card, CardActionArea, Stack } from '@mui/material'
 import CreateIcon from '@mui/icons-material/Create';
+
+import axios, { AxiosResponse } from 'axios';
+import BoardListItem from 'src/components/BoardListItem';
+import useUserStore from 'src/stores/user.store';
 import { usePagingHook } from 'src/hooks';
 import { BOARD_LIST } from 'src/mock';
-import useUserStore from 'src/stores/user.store';
-import BoardListItem from 'src/components/BoardListItem';
-import { getPageCount } from 'src/utils';
-import { useNavigate } from 'react-router-dom';
-import { IPreviewItem } from 'src/interfaces';
-import { useCookies } from 'react-cookie';
-import axios, { AxiosResponse } from 'axios';
-import { GetMyListResponseDto } from 'src/apis/response/board';
+
 import ResponseDto from 'src/apis/response';
-import { access } from 'fs';
+import { getPageCount } from 'src/utils';
+import { IPreviewItem } from 'src/interfaces';
+import { GetMyListResponseDto } from 'src/apis/response/board';
 import { authorizationHeader, GET_MY_LIST_URL } from 'src/constants/api';
 
 export default function MyPageContents() {
 
+  //          HooK          //
+  
   const { boardList, viewList, pageNumber, onPageHandler, COUNT, setBoardList } = usePagingHook(5);
   //? 로그인 한 상태일 때 유저 정보를 가져올 수 있도록
   //? 스토어에서 user 상태를 가져옴
-  const { user } = useUserStore()
   const navigator = useNavigate();
 
   const [cookies] = useCookies();
+  const { user } = useUserStore()
 
+
+  //          Event Handler          //
   const getMyList = (accessToken: string) => {
     axios.get(GET_MY_LIST_URL, authorizationHeader(accessToken))
       .then((response) => getMyListResponseHandler(response))
       .catch((error) => getMyListErrorHandler(error))
   }
 
+  //          Response Handler          //
   const getMyListResponseHandler = (response: AxiosResponse<any, any>) => {
 
     const { result, message, data } = response.data as ResponseDto<GetMyListResponseDto[]>
@@ -40,10 +47,13 @@ export default function MyPageContents() {
 
   }
 
+  //          Error Handler          //
   const getMyListErrorHandler = (error: any) => {
     console.log(error.message);
 
   }
+
+  //          Use Effect          //
   useEffect(() => {
 
     const accessToken = cookies.accessToken;

@@ -22,7 +22,10 @@ export default function SearchView() {
   const { viewList, boardList, COUNT, pageNumber, onPageHandler, setBoardList } = usePagingHook(5);
 
   const [popularList, setPopularList] = useState<string[]>([]);
+  const [previousSearchWord, setPreviousSearchWord] = useState<string>('');
   
+  let loadFlag = true;
+
   //          Event Handler          //
   const getTop15RelatedSearchWord = () => {
     axios.get(GET_TOP15_RELATED_SEARCH_WORD_URL(content as string))
@@ -33,7 +36,8 @@ export default function SearchView() {
   const getSearchList = () => {
     //? 받는 방법 1 : GET_SEARCH_LIST_URL + content / 상수, 변수 합쳐서
     //? 받는 방법 2 : 함수로 만들어서 사용
-    axios.get(GET_SEARCH_LIST_URL(content as string))
+
+    axios.get(GET_SEARCH_LIST_URL(content as string, previousSearchWord))
     .then((response) => getSearchListResponseHandler(response))
     .catch((error) => getSearchListErrorHandler(error));
   }
@@ -65,8 +69,12 @@ export default function SearchView() {
     //? 해당 문자열에서 검색할 문자열이 존재한다면 true, 아니면 false를 반환하는 메서드
     // const tmp = BOARD_LIST.filter((board) => board.boardTitle.includes(content as string)); spring이랑 react 합치기 전 만들어 놓은 거
 
-    getSearchList();
-    getTop15RelatedSearchWord();
+    if(loadFlag){
+      loadFlag = false;
+      getSearchList();
+      getTop15RelatedSearchWord();
+      setPreviousSearchWord(content as string);
+    }
   }, [content]);
 
   // useEffect(() =>{

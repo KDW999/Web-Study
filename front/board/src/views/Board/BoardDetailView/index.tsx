@@ -66,7 +66,8 @@ export default function BoardDetailView() {
     //? 좋아요 누르기
     const onLikeHandler = () => {
         if(!accessToken){
-            alert('로그인 필요')
+            //alert('로그인 필요')
+            // path : '/auth';
             return;
         }
 
@@ -225,7 +226,7 @@ export default function BoardDetailView() {
     }, [likeList])
 
     return (
-        <Box sx={{ p: '100px 222px' }}>
+        <Box sx={{ p: '100px 222px', whiteSpace : 'pre-wrap' }}>
             <Box>
                 <Box>
                     <Typography sx={{ fontSize: '32px', fontWeight: 500 }}>{board?.boardTitle}</Typography>
@@ -286,6 +287,7 @@ export default function BoardDetailView() {
                    </Box>
             )}
 
+           {accessToken &&
             <Box>
                 {
                     openComment && (
@@ -317,6 +319,8 @@ export default function BoardDetailView() {
                 }
 
             </Box>
+}
         </Box>
+    
     )
 }

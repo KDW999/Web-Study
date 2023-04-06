@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, ChangeEvent } from 'react'
+import React, { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom';
 
 import axios, { AxiosResponse } from 'axios';
@@ -29,6 +29,20 @@ export default function BoardWriteView() {
     //          Event Handler          //
     // TODO : BoardDetailView, BoardUpdateView, MyPageHead에서 중복
     // TODO : Hook 또는 외부 함수로 변경
+
+    //? 줄바꿈
+    const onBoardContentChangeHandler = (event : ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+      const value = event.target.value;
+      console.log(value);
+      setBoardContent(value);
+    }
+
+    //? 줄바꿈하는 추가적인 방법
+    const onBoardContentKeyPressHandler = (event : KeyboardEvent<HTMLInputElement>) => {
+      if(event.key != "Enter") return;
+      setBoardContent(boardContent + '\n');
+    }
+
     const onImageUploadButtonHandler = () => {
       if(!imageRef.current) return; //? imageRef에 값이 없다면 리턴
       
@@ -120,20 +134,19 @@ export default function BoardWriteView() {
                     minRows={3}
                     placeholder = '본문을 작성해 주세요'
                     sx = {{ fontSize : '18px', fontWeight : 500, lineHeight : '150%'}}
-                    onChange = {(event) => setBoardContent(event.target.value)}/>
+                    onChange = {(event) => onBoardContentChangeHandler(event)}/>
                  <Box component= 'img' src = {boardImgUrl}/>
                  </Box>
 
                    <IconButton onClick = {() => onImageUploadButtonHandler()}>
                      <ImageOutlinedIcon/>
-                     <input ref = {imageRef} hidden type = 'file' accept = 'image/*' onChange={(event) => onImageUploadChangeHandler(event)}/>
+                     <input ref = {imageRef} hidden type = 'file' accept = 'image/*' onChange={(event) => onImageUploadChangeHandler(event)} onKeyDown={(event) => onBoardContentKeyPressHandler(event)}/>
                    </IconButton>
-                 
 
                 </Box>
             </Box>
             <Fab 
-            sx = {{ position : 'fixed', bottom : '200px', right : '248px', backgroundColor : 'rgba(0, 0, 0, 0.04)'}}
+            sx = {{ position : 'fixed', zIndex : 999, bottom : '200px', right : '248px', backgroundColor : 'rgba(0, 0, 0, 0.04)'}}
             onClick = {onWriteHandler}>
              <CreateIcon/>
             </Fab>

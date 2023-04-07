@@ -8,6 +8,7 @@ import {
   FormHelperText,
   Checkbox
 } from '@mui/material'
+import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Visibility from '@mui/icons-material/Visibility';
@@ -17,9 +18,9 @@ import { useSignUpStore } from 'src/stores'; // export는 중괄호 써서 가�
 import { SignUpDto } from 'src/apis/request/auth';
 import  ResponseDto from 'src/apis/response';
 import { SignUpresponseDto } from 'src/apis/response/auth';
-import { POST_VALIDATE_EMAIL, SIGN_UP_URL } from 'src/constants/api';
-import { ValidateEmailResponseDto } from 'src/apis/response/user';
-import { ValidateEmailDto } from 'src/apis/request/user';
+import { SIGN_UP_URL, VALIDATE_EMAIL_URL, VALIDATE_NICKNAME_URL, VALIDATE_TEL_NUMBER_URL } from 'src/constants/api';
+import { ValidateEmailResponseDto, ValidateNicknameResponseDto, ValidateTelNumberResponseDto } from 'src/apis/response/user';
+import { ValidateEmailDto, ValidateNicknameDto, ValidateTelNumberDto } from 'src/apis/request/user';
 
 //          Component          //
 
@@ -58,13 +59,13 @@ function FirstPage({signUpError} : FirstPageProps) {
     setEmail(value);
   }
   
-  const emailValidateHandler = () => {
+  const onEmailValidateButtonHandler = () => {
     if(emailMessage) return;
     const data : ValidateEmailDto = { email }
-
-    axios.post(POST_VALIDATE_EMAIL, data)
-    .then((response) => emailValidateResponseHandler(response))
-    .catch((error) => emailValidateErrorHandler(error));
+    
+    axios.post(VALIDATE_EMAIL_URL, data)
+    .then((response) => validateEmailResponseHandler(response))
+    .catch((error) => validateEmailErrorHandler(error));
   }
 
   const onPasswordChangeHandler = (event : ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
@@ -84,7 +85,7 @@ function FirstPage({signUpError} : FirstPageProps) {
   }
 
   //          Response Handler          //
-  const emailValidateResponseHandler = (response : AxiosResponse<any, any>) => {
+  const validateEmailResponseHandler = (response : AxiosResponse<any, any>) => {
 
     const { result, message, data } = response.data as ResponseDto<ValidateEmailResponseDto>;
     if(!result || !data){
@@ -98,7 +99,7 @@ function FirstPage({signUpError} : FirstPageProps) {
   }
 
   //          Error Handler          //
-  const emailValidateErrorHandler = (error : any) => console.log(error.message);
+  const validateEmailErrorHandler = (error : any) => console.log(error.message);
 
   return (
     <Box>
@@ -107,7 +108,7 @@ function FirstPage({signUpError} : FirstPageProps) {
         <InputLabel>이메일 주소*</InputLabel>
         <Input type = "text" endAdornment ={
           <InputAdornment position = "end">
-            <IconButton onClick={() => emailValidateHandler()}>
+            <IconButton onClick={() => onEmailValidateButtonHandler()}>
              <CheckBoxIcon/>
             </IconButton>
           </InputAdornment>
@@ -168,7 +169,10 @@ function SecondPage({signUpError} : SecondPageProps) {
   const{nickname, telNumber, address, addressDetail} = useSignUpStore();
   const{setNickname, setTelNumber, setAddress, setAddressDetail} = useSignUpStore();
 
-  const [telNumberMessage, setTelNumberMessage] = useState<string>('');
+  const[nicknameValidateMessage, setnicknameValidateMessage] = useState<string>('');
+  const[telNumberValidateMessage, setTelNumberValidateMessage] = useState<string>('');
+  const[telNumberMessage, setTelNumberMessage] = useState<string>('');
+  
   const telNumberValidator = /^[0-9]{0,13}%/;
   //const telNumberValidator = /^[0-9]{3}-[0-9]{3,4}-[0-9]{3,4}%/;
 
@@ -180,22 +184,96 @@ function SecondPage({signUpError} : SecondPageProps) {
     else setTelNumberMessage('숫자만 입력해주세요.');
     setTelNumber(value);
   }
+
+  const onNicknameValidateButtonHandler = () => {
+    if(!nickname) return;
+    const data : ValidateNicknameDto = { nickname } // requestDto의 변수명과 store의 변수명이 일치해야한다.
+
+    axios.post(VALIDATE_NICKNAME_URL, data)
+    .then((response) => validateNicknameResponseHandler(response))
+    .catch((error) => validateNicknameErrorHandler(error));
+  }
+
+  const onTelNumberValidateButtonHandler = () => {
+    if(telNumberMessage) return;
+    if(telNumber.length < 13) return;
+    const data : ValidateTelNumberDto = { telNumber };
+
+    axios.post(VALIDATE_TEL_NUMBER_URL, data)
+     .then((response) => validateTelNumberResponseHandler(response))
+     .catch((error) => validateTelNumberErrorHandler(error))
+  }
+
+  //          Response Handler          //
+  const validateNicknameResponseHandler = (response : AxiosResponse<any, any>) => {
+
+    const { result, message, data } = response.data as ResponseDto<ValidateNicknameResponseDto>;
+    if(!result || !data){
+      alert(message);
+      return;
+    }
+    const validateMessage = data.result ? '중복되는 닉네임입니다.' : '사용 가능한 닉네임입니다.'
+    setnicknameValidateMessage(validateMessage);
+
+  }
+  const validateTelNumberResponseHandler = (response : AxiosResponse<any, any>) => {
+  //? 도대체 왜 안됄까?
+
+  //? data.result ? '중복되는 휴대폰 번호입니다.' :
+    const validateMessage =  '사용 가능한 휴대폰 번호입니다.'
+    setTelNumberValidateMessage(validateMessage);
+
+    const { result, message, data } = response.data as ResponseDto<ValidateTelNumberResponseDto>;
+    if(!result || !data){
+      alert(message);
+      return;
+    }
+    
+  }
+
+  //          Error Handler          //
+  const validateNicknameErrorHandler = (error : any) => console.log(error.message);
+  const validateTelNumberErrorHandler = (error : any) => console.log(error.message);
+
   return (
     <Box>
-      <TextField 
-      sx = {{mt : '40px'}} 
-      error = {signUpError}
-      fullWidth label = "닉네임*" 
-      variant = "standard" 
+      <FormControl sx = {{mt : '40px'}} error = {signUpError} fullWidth variant = "standard">
+        <InputLabel>닉네임*</InputLabel>
+        <Input type = "text" endAdornment ={
+          <InputAdornment position = 'end'>
+            <IconButton onClick = {() => onNicknameValidateButtonHandler()}>
+              <CheckBoxRoundedIcon/>
+            </IconButton>
+          </InputAdornment>
+        }
       value = {nickname} 
-      onChange = {(event) => setNickname(event.target.value)}/>
-      <TextField 
+      onChange = {(event) => setNickname(event.target.value)} 
+      />
+      <FormHelperText sx = {{ color : 'red'}}>{nicknameValidateMessage}</FormHelperText>
+      </FormControl>
+
+      <FormControl sx = {{mt : '40px'}} error = {signUpError} fullWidth variant = "standard">
+        <InputLabel>휴대폰 번호*</InputLabel>
+        <Input type = "text" endAdornment = {
+          <InputAdornment position = 'end'>
+            <IconButton onClick = {() => onTelNumberValidateButtonHandler()}>
+              <CheckBoxRoundedIcon/>
+            </IconButton>
+          </InputAdornment>
+        }
+        value = {telNumber}
+        onChange={(event) => onTelNumberHandler(event)}
+        />
+        <FormHelperText sx = {{ color : 'red'}}>{telNumberMessage} {telNumberValidateMessage}</FormHelperText>
+        </FormControl>
+     
+      {/* <TextField 
       sx = {{mt : '40px'}} 
       error = {signUpError}
       fullWidth label = "휴대폰 번호*" 
       variant= 'standard' 
       value = {telNumber} 
-      onChange = {(event) => onTelNumberHandler(event)} helperText = {telNumberMessage}/>
+      onChange = {(event) => onTelNumberHandler(event)} helperText = {telNumberMessage}/> */}
 
       <FormControl sx = {{mt : '40px'}} error = {signUpError} fullWidth variant='standard' >
         <InputLabel>주소*</InputLabel>
@@ -239,7 +317,7 @@ export default function SignUpCardView({ setLoginView }: Props) {
   const [signUpError, setSignUpError] = useState<boolean>(false);
 
   const emailValidator = /^[A-Za-z0-9]([-.]?[A-Za-z0-9])*@[A-Za-z0-9]([-.]?[A-Za-z0-9])*\.[A-Za-z0-9]{2,3}$/ //? 이렇게 적으면 A~Z, a~z 0~9까지만 문자로 지정해줄 수 있다.
-  const passwordValidator = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!?_]).{8,20}%/
+  const passwordValidator = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!?_]).{8,20}$/
 
   //          Event Handler          //
   const onNextButtonHandler = () => {
@@ -247,6 +325,7 @@ export default function SignUpCardView({ setLoginView }: Props) {
     //? 해당 문자열 변수가 빈값인지 확인
     //? 1. 해당 변수 == '';
     //? 2. 해당 변수 길이 == 0;
+
     if (!email || !password || !passwordCheck) { // 스크립트에선 !으로 값이 비었는지 검사가능 / 자바에선 이러면 안됨
       setSignUpError(true);
       // alert('모든 값을 입력하세요.');
@@ -254,14 +333,15 @@ export default function SignUpCardView({ setLoginView }: Props) {
     }
 
     if(!emailValidator.test(email)) return;
-    if(!passwordValidator.test(password)) return;
+    if(!passwordValidator.test(password)) return; //? 이거 왜 통과가 안되지? → 정규식 쓸 때 문자 구분 잘하자
+    
     if (password !== passwordCheck) return;
       // alert('비밀번호가 다릅니다.');
-
-    //todo : 검증이 실패하면 return
-    //todo : 검증이 성공하면 page 변경
     setSignUpError(false);
     setPage(2);
+    //todo : 검증이 실패하면 return
+    //todo : 검증이 성공하면 page 변경
+    
   };
 
   const onSignUpHandler = () => {
@@ -315,7 +395,7 @@ export default function SignUpCardView({ setLoginView }: Props) {
   //          Response Handler          //
   const signUpResponseHandler = (response : AxiosResponse<any, any>) => {
 
-    const { result, message, data } = response.data as ResponseDto<SignUpresponseDto>; 
+    const { result, message } = response.data as ResponseDto<SignUpresponseDto>; 
 
       if(result) setLoginView(true);
       else alert(message);

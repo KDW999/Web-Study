@@ -30,7 +30,7 @@ public class WebSecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
             .antMatchers("/api/board/my-list").authenticated()
-            .antMatchers("/auth/**", "/file/**", "/web-socket/**", "/api/send-mail").permitAll() // 인가해줄 url 지정
+            .antMatchers("/auth/**", "/file/**", "/web-socket/**", "/api/send-mail", "/api/user/validate/**").permitAll() // 인가해줄 url 지정
             .antMatchers(HttpMethod.GET, "/api/board/**").permitAll()
             .anyRequest().authenticated().and()
             .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
